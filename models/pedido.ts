@@ -5,12 +5,15 @@ import { Producto } from "./producto";
 @Entity({name:'pedidos'})
 export class Pedido{
     @PrimaryGeneratedColumn()
-    id!: string
+    id!: number
 
     @Column('varchar',{length:10})
     fecha!: string
+    
+    @Column('numeric')
+    horaMinutosEmision!: number
 
-    @Column('varchar',{length:24,unique:true})
+    @Column('varchar',{length:30,unique:true})
     cotizacion!: string
 
     @ManyToOne(()=>Cliente,(cliente)=>cliente.pedidos,{cascade:true,onDelete:'CASCADE'})
@@ -21,6 +24,8 @@ export class Pedido{
 
     @BeforeInsert()
     beforeInsert(){
-        this.cotizacion = `VMShein-${this.cliente.nombre[0]}${this.cliente.apellido[0]}-${this.fecha.split('/').join('')}-${this.id}`
+        const fechaDividida = this.fecha.split('-')
+        const cotizacionTmp = `VMShein-${this.cliente.nombre[0]}${this.cliente.apellido[0]}-${fechaDividida[2]}${fechaDividida[1]}${fechaDividida[0].split('20').join('')}-${this.productos.length}${this.horaMinutosEmision}`
+        this.cotizacion = cotizacionTmp
     }
 }
