@@ -6,7 +6,7 @@ import express from 'express'
 dotenv.config()
 import { AppDataSource } from './db'
 import path from 'path'
-// import ApiControllers from './controllers'
+import ApiControllers from './controllers/router'
 
 
 
@@ -18,7 +18,7 @@ server.use(express.static('app'))
 server.get('/',(req,res)=>{
     return res.sendFile(path.join(__dirname,'app','index.html'))
 })
-// server.use('/api',ApiControllers)
+server.use('/api',ApiControllers)
 
 server.listen(+process.env.PORT!,()=>{
     AppDataSource.initialize().then(()=>{
