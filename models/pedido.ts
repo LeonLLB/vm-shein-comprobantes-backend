@@ -16,10 +16,10 @@ export class Pedido{
     @Column('varchar',{length:30,unique:true})
     cotizacion!: string
 
-    @ManyToOne(()=>Cliente,(cliente)=>cliente.pedidos,{cascade:true,onDelete:'CASCADE'})
+    @ManyToOne(()=>Cliente,(cliente)=>cliente.pedidos,{cascade:true,onDelete:'CASCADE',eager:true})
     cliente!: Cliente
 
-    @OneToMany(()=>Producto,(producto)=>producto.pedido,{cascade:true,onDelete:'CASCADE'})
+    @OneToMany(()=>Producto,(producto)=>producto.pedido,{cascade:true,onDelete:'CASCADE',eager:true})
     productos!: Producto[]
 
     @BeforeInsert()
