@@ -1,10 +1,10 @@
 import {Request} from 'express'
-import { ArrayMinSize, IsArray, IsDate, MinLength, ValidateNested } from "class-validator"
+import { ArrayMinSize, IsArray, IsDate, IsDateString, MinLength, ValidateNested } from "class-validator"
 import { ClienteDTO } from "./cliente"
 import { ProductoDTO } from "./producto"
 
 export class PedidoDTO{
-    @IsDate()
+    @IsDateString()
     fecha!: string
 
     @ValidateNested()
