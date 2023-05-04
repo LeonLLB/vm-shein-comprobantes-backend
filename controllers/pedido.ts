@@ -76,7 +76,32 @@ class PedidoController{
     }
 
     async eliminar(req:Request,res:Response){
+        const {queryParam} = req.params
 
+        let deleteError
+
+        if(isNaN(+queryParam)){
+            deleteError = await pedidoService.delete(queryParam)
+        } else {
+            deleteError = await pedidoService.delete(+queryParam)
+        }
+        
+        if(deleteError){
+            try {
+                const errorObject = getError(deleteError)
+                return res.status(errorObject.status).send(errorObject)
+            } catch (error:any) {
+                return res.status(500).send({
+                    status:500,
+                    message:error.message,
+                    name:'Internal Server error'
+                })
+            }
+        }
+
+        return res.status(200).send({
+            message:'All ok!'
+        })
     }
 
     async consultarPedidos(req:Request,res:Response){

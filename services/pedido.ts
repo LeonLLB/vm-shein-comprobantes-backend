@@ -14,6 +14,13 @@ class PedidoService{
         return new Error(JSON.stringify({status,message,name}))
     }
 
+    private async prepareQueryRunner(){
+        const queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        return queryRunner
+    }
+    
     async create(dto: PedidoDTO):Promise<Pedido>{
         const pedido = pedidoRepository.create({
             fecha: dto.fecha,
@@ -29,15 +36,24 @@ class PedidoService{
         return pedido
     }
 
-    async update(queryParam:number | string,dto:PedidoDTO):Promise<Error | null>{
-        const pedidoViejo = await pedidoRepository.findOneBy(
+    async getPedido(queryParam:string|number){
+        const pedido = await pedidoRepository.findOneBy(
             isNaN(+queryParam) ? {cotizacion:queryParam as string} : {id:+queryParam}
         )
-        if(!pedidoViejo) return this.genError(404,'No existe ese pedido','Not Found')
+        if(!pedido) throw this.genError(404,'No existe ese pedido','Not Found')
+        return pedido
+    }
 
-        const queryRunner = AppDataSource.createQueryRunner()
-        await queryRunner.connect()
-        await queryRunner.startTransaction()
+    async update(queryParam:number | string,dto:PedidoDTO):Promise<Error | null>{
+        let pedidoViejo: Pedido
+
+        try {
+            pedidoViejo = await this.getPedido(queryParam)
+        } catch (error: any) {
+            return error
+        }
+
+        const queryRunner = await this.prepareQueryRunner()
 
         try {
             await queryRunner.manager.update(Cliente,{id:pedidoViejo.cliente.id},{...dto.cliente})
@@ -62,6 +78,33 @@ class PedidoService{
             return error
         }
 
+    }
+
+    async delete(queryParam: number | string):Promise<Error|null>{
+        let pedidoViejo: Pedido
+
+        try {
+            pedidoViejo = await this.getPedido(queryParam)
+        } catch (error: any) {
+            return error
+        }
+
+        const queryRunner = await this.prepareQueryRunner()
+
+        try {
+            await queryRunner.manager.delete(Cliente,{id:pedidoViejo.cliente.id})
+        
+            await queryRunner.manager.delete(Pedido,{id:pedidoViejo.id})
+        
+            await queryRunner.commitTransaction()
+            await queryRunner.release()
+            return null
+            
+        } catch (error: any) {
+            await queryRunner.rollbackTransaction()
+            await queryRunner.release()
+            return error
+        }
     }
 
 }
