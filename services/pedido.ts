@@ -44,6 +44,31 @@ class PedidoService{
         return pedido
     }
 
+    private getPaginationMetadada(count:number,limit:number){
+        const totalPagesAsString = (count / limit).toFixed(1);
+        let pages = parseInt(totalPagesAsString.split('.')[0]);
+      
+        if (count % limit > 0) {
+          pages++;
+        }
+
+        return pages
+    }
+
+    async getPedidos(limit:number,offset:number){
+        const count = await pedidoRepository.count()
+        const pedidos = await pedidoRepository.find({
+            skip:offset*limit,
+            take:limit
+        })
+        if(pedidos.length === 0) throw this.genError(404,'No existen pedidos','Not Found')
+        return {
+            pedidos,
+            pages:this.getPaginationMetadada(count,limit),
+            total:count
+        }
+    }
+
     async update(queryParam:number | string,dto:PedidoDTO):Promise<Error | null>{
         let pedidoViejo: Pedido
 
