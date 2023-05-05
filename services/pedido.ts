@@ -6,6 +6,7 @@ import { Producto } from "../models/producto";
 import { clienteRepository } from "../repositories/cliente";
 import { pedidoRepository } from "../repositories/pedido";
 import { productoRepository } from "../repositories/producto";
+import { pdfPedidoService } from "./pdf";
 
 
 class PedidoService{
@@ -130,6 +131,13 @@ class PedidoService{
             await queryRunner.release()
             return error
         }
+    }
+
+    async prepareComprobante(queryParam:string|number){
+        const pedido = await this.getPedido(queryParam)
+        
+        const comprobante = await pdfPedidoService.generateComprobante(pedido)
+        return comprobante
     }
 
 }

@@ -128,7 +128,32 @@ class PedidoController {
     }
 
     async emitirComprobante(req: Request, res: Response) {
+        const { queryParam } = req.params
 
+        let comprobanteBuffers
+
+        try {
+            if (isNaN(+queryParam)) {
+                comprobanteBuffers = await pedidoService.prepareComprobante(queryParam)
+            } else {
+                comprobanteBuffers = await pedidoService.prepareComprobante(+queryParam)
+            }
+        } catch (error:any) {
+            try {
+                console.log(error)
+                const errorObject = getError(error)
+                return res.status(errorObject.status).send(errorObject)
+            } catch (error: any) {
+                return res.status(500).send({
+                    status: 500,
+                    message: error.message,
+                    name: 'Internal Server error'
+                })
+            }
+        }
+        res.setHeader('Content-Type', 'application/pdf')
+        res.setHeader('Content-Disposition', `attachment; filename="comprobante-${queryParam}.pdf"`)
+        return res.status(200).send(Buffer.concat(comprobanteBuffers))
     }
 
 }
