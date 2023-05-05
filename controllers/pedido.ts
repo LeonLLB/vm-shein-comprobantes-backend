@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { validateOrReject } from 'class-validator'
 import { PedidoDTO } from '../dto/pedido'
 import { pedidoService } from '../services/pedido'
+import { Pedido } from '../models/pedido'
 
 const getError = (error: Error) => {
 
@@ -124,6 +125,36 @@ class PedidoController {
             const errorObject = getError(error)
             return res.status(errorObject.status).send(errorObject)
         }
+
+    }
+    async consultarPedido(req: Request, res: Response) {
+
+        const { queryParam } = req.params
+
+        let pedido: Pedido
+
+        try {
+            if (isNaN(+queryParam)) {
+                pedido = await pedidoService.getPedido(queryParam)
+            } else {
+                pedido = await pedidoService.getPedido(+queryParam)
+            }
+        } catch (error:any) {
+            try {
+                console.log(error)
+                const errorObject = getError(error)
+                return res.status(errorObject.status).send(errorObject)
+            } catch (error: any) {
+                return res.status(500).send({
+                    status: 500,
+                    message: error.message,
+                    name: 'Internal Server error'
+                })
+            }
+        }
+
+
+        return res.status(200).send(pedido)
 
     }
 

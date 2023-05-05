@@ -1,16 +1,29 @@
 import dotenv from 'dotenv'
 import 'reflect-metadata'
 import express from 'express'
-// import cookieParser from 'cookie-parser'
-// import cors from 'cors'
+import cors from 'cors'
 dotenv.config()
 import { AppDataSource } from './db'
 import path from 'path'
 import ApiControllers from './controllers/router'
 
-
+const origins = [
+    'http://localhost:5173',
+]
 
 const server = express()
+
+server.use(cors({
+    origin:(origin,cb)=>{
+        if(!origin) return cb(null,true)
+
+        if(origins.indexOf(origin)===-1){
+            return cb(new Error('CORS no valido'),false)
+        }
+        return cb(null,true)
+    },
+    credentials:true
+}))
 
 server.use(express.json())
 
