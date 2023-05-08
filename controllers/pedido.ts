@@ -28,11 +28,28 @@ class PedidoController {
             return res.status(400).send(errors)
         }
 
-        const pedido = await pedidoService.create(pedidoDto)
+        try {
+            await pedidoService.create(pedidoDto)
+        } catch (error:any) {
+
+            if((error as Error).message.includes('duplic')){
+                return res.status(400).send({
+                    status: 400,
+                    message: 'Ya existe ese registro',
+                    name: 'Bad Request'
+                })
+            }
+
+            console.log(error)
+            return res.status(500).send({
+                status: 500,
+                message: 'Hubo un error en el servidor al crear el pedido',
+                name: 'Internal Server Error'
+            })
+        }
 
         return res.status(200).send({
-            message: 'All ok!',
-            pedido
+            message: 'All ok!'
         })
 
     }
@@ -107,20 +124,8 @@ class PedidoController {
 
     async consultarPedidos(req: Request, res: Response) {
 
-        const { offset = 0, limit = 10 } = req.query
-
-        if (
-            isNaN(+offset) || isNaN(+limit)
-        ) {
-            return res.status(400).send({
-                status: 400,
-                message: 'Unvalid offset or limit, they must be numbers',
-                name: 'Bad Rquest'
-            })
-        }
-
         try {
-            return res.status(200).send(await pedidoService.getPedidos(+limit, +offset))
+            return res.status(200).send(await pedidoService.getPedidos())
         } catch (error: any) {
             const errorObject = getError(error)
             return res.status(errorObject.status).send(errorObject)

@@ -254,7 +254,7 @@ export const genComprobante = (data: Pedido): Promise<any> => {
 				{
 					table: {
 						headerRows: 1,
-						widths: ['*', '*', '*', '*', '*'],
+						widths: [100, '*','*', '*', '*', '*'],
 						body: [
 							[
 								{
@@ -266,6 +266,11 @@ export const genComprobante = (data: Pedido): Promise<any> => {
 									style: ['center'],
 									margin: [0, 5, 0, 5],
 									text: 'TALLA',
+								},
+								{
+									style: ['center'],
+									margin: [0, 5, 0, 5],
+									text: 'COLOR',
 								},
 								{
 									style: ['center'],
@@ -308,6 +313,8 @@ export const genComprobante = (data: Pedido): Promise<any> => {
 				{
           style: ['center','link'],
           margin: [0, 5, 0, 5],
+		  fontSize:8,
+		  lineHeight:1.25,
           text: producto.link,
           link: producto.link,
         },
@@ -315,6 +322,11 @@ export const genComprobante = (data: Pedido): Promise<any> => {
           style: ['center'],
           margin: [0, 5, 0, 5],
           text: producto.talla,
+        },
+        {
+          style: ['center'],
+          margin: [0, 5, 0, 5],
+          text: producto.color,
         },
         {
           style: ['center'],
