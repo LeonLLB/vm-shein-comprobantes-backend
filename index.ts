@@ -9,6 +9,8 @@ import ApiControllers from './controllers/router'
 
 const origins = [
     'http://localhost:5173',
+    'http://localhost:3000',
+    'https://vm-shein.onrender.com',
 ]
 
 const server = express()
@@ -16,7 +18,6 @@ const server = express()
 server.use(cors({
     origin:(origin,cb)=>{
         if(!origin) return cb(null,true)
-
         if(origins.indexOf(origin)===-1){
             return cb(new Error('CORS no valido'),false)
         }
