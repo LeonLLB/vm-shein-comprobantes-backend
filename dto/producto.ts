@@ -9,21 +9,21 @@ export class ProductoDTO{
     @IsString()
     talla!: string
 
-    @IsString()
-    color!: string
-
     @IsNumber({maxDecimalPlaces:0})
     cantidad!: number
 
     @IsNumber()
     precioUnitario!:number
 
+    @IsNumber()
+    envioUnitario!:number
+
     constructor(rawProducto:any){
         this.link = rawProducto?.link
         this.talla = rawProducto?.talla
-        this.color = rawProducto?.color
         this.cantidad = rawProducto?.cantidad
         this.precioUnitario = rawProducto?.precioUnitario
+        this.envioUnitario = rawProducto?.envioUnitario
     }
 
 }

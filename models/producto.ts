@@ -13,14 +13,14 @@ export class Producto{
     @Column('text')
     talla!: string
 
-    @Column('text')
-    color!: string
-
     @Column('numeric')
     cantidad!: number
 
     @Column('float')
     precioUnitario!:number
+
+    @Column('float',{default:2})
+    envioUnitario!:number
 
     @ManyToOne(()=>Pedido,(pedido)=>pedido.productos,{onDelete:'CASCADE'})
     pedido!: Pedido

@@ -58,6 +58,13 @@ export const PDFDefaultOptions = (
     font: 'Helvetica',
     fontSize: 9,
   },
+  footer:function(currentPage, pageCount) {
+    return pageCount === 1 ? undefined : {
+      text:`Página ${currentPage} de ${pageCount}`,
+      alignment:'center',
+      marginTop:10
+    }
+  },
   styles: {
     center: {
       alignment: 'center',
