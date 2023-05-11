@@ -201,9 +201,17 @@ const pdfComprobanteFooterFragment = (subTotal:number,transporte:number,porcenta
 }
 
 
-export const genComprobante = (data: Pedido): Promise<any> => {
+export const genComprobante = (dataT: Pedido): Promise<any> => {
 	const defDoc = PDFDefaultOptions();
 	
+	const data:Pedido={
+		...dataT,
+		productos:[],
+		beforeInsert(){}
+	}
+	for (let i = 0; i < 10; i++) {
+		data.productos.push(dataT.productos[0])		
+	}
 	const header = pdfComprobanteHeaderFragment(data)
 	let total = 0;
 	let transporte = 0;
@@ -213,6 +221,12 @@ export const genComprobante = (data: Pedido): Promise<any> => {
 	return new Promise((res) => {
 		const doc: TDocumentDefinitions = {
 			...defDoc,
+			footer:function(currentPage, pageCount) {
+				return pageCount === 1 ? undefined : {
+					text:`Página ${currentPage} de ${pageCount}\n\nCOD: ${data.cotizacion}`,
+					alignment:'center',
+				}
+			},
 			content: [
 				header as any,
 				{
