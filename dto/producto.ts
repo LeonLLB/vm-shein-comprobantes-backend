@@ -18,12 +18,16 @@ export class ProductoDTO{
     @IsNumber()
     envioUnitario!:number
 
+    @IsString()
+    nombre!: string
+
     constructor(rawProducto:any){
         this.link = rawProducto?.link
         this.talla = rawProducto?.talla
         this.cantidad = rawProducto?.cantidad
         this.precioUnitario = rawProducto?.precioUnitario
         this.envioUnitario = rawProducto?.envioUnitario
+        this.nombre = rawProducto?.nombre
     }
 
 }

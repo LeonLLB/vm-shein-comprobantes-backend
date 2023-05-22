@@ -75,7 +75,7 @@ const pdfComprobanteHeaderFragment = (data:Pedido) => {
 	}
 }
 
-const pdfComprobanteFooterFragment = (subTotal:number,transporte:number,porcentaje:number):{tableOnFooter:TableCell[][],enterpriseFooter:Column[]}=>{
+const pdfComprobanteFooterWithImpuestoFragment = (subTotal:number,transporte:number,porcentaje:number):{tableOnFooter:TableCell[][],enterpriseFooter:Column[]}=>{
 	const impuesto = porcentaje / 100
 	const totalPedido = subTotal + (impuesto * subTotal) + transporte
 
@@ -200,6 +200,113 @@ const pdfComprobanteFooterFragment = (subTotal:number,transporte:number,porcenta
 	}
 }
 
+const pdfComprobanteFooterWithoutImpuestoFragment = (subTotal:number,transporte:number):{tableOnFooter:TableCell[][],enterpriseFooter:Column[]}=>{
+	const totalPedido = subTotal + transporte
+
+	return {
+		tableOnFooter:[
+			[
+				{
+					margin:[0,5,0,5],
+					style:['center'],
+					fontSize:8,
+					bold:true,
+					text:'SUB-TOTAL'
+				},
+				{
+					margin:[0,5,0,5],
+					style:['center'],
+					fontSize:8,
+					bold:true,
+					text:'$ '+subTotal.toFixed(2)
+				}
+			],
+			[
+				{
+					margin:[0,5,0,5],
+					style:['center'],
+					fontSize:8,
+					bold:true,
+					text:'(+) TRANSPORTE'
+				},
+				{
+					margin:[0,5,0,5],
+					style:['center'],
+					fontSize:8,
+					bold:true,
+					text:'$ '+transporte
+				}
+			],
+			[
+				{
+					margin:[0,5,0,5],
+					style:['center'],
+					fontSize:8,
+					bold:true,
+					fillColor:'#FECB00',
+					color:'white',
+					text:'TOTAL'
+				},
+				{
+					margin:[0,5,0,5],
+					style:['center'],
+					fontSize:8,
+					bold:true,
+					fillColor:'#FECB00',
+					color:'white',
+					text:'$ '+totalPedido
+				}
+			],
+		],
+		enterpriseFooter:[
+			{
+				width:'*',
+				type:'none',
+				ul:[
+					{
+						style:['center'],
+						marginLeft:100,
+						table:{
+							dontBreakRows:true,		
+							widths:['auto',200],					
+							body:[
+								[
+									{
+										bold:true,
+										fontSize:8,
+										margin:[0,5,0,5],
+										text:'ENTREGADO A:'
+									},
+									{
+										bold:true,
+										fontSize:8,
+										margin:[0,5,0,5],
+										text:' '
+									}
+								],
+								[
+									{
+										bold:true,
+										fontSize:8,
+										margin:[0,5,0,5],
+										text:'ENVIADO A:'
+									},
+									{
+										bold:true,
+										fontSize:8,
+										margin:[0,5,0,5],
+										text:' '
+									}
+								],
+							]
+						}
+					}
+				]
+			}			
+			
+		]
+	}
+}
 
 export const genComprobante = (data: Pedido): Promise<any> => {
 	const defDoc = PDFDefaultOptions();
@@ -208,7 +315,7 @@ export const genComprobante = (data: Pedido): Promise<any> => {
 	let total = 0;
 	let transporte = 0;
 	data.productos.forEach(({precioUnitario,envioUnitario,cantidad})=>{transporte+=envioUnitario*cantidad;total+=precioUnitario*cantidad})
-	const {tableOnFooter,enterpriseFooter} = pdfComprobanteFooterFragment(total,transporte,5)
+	const {tableOnFooter,enterpriseFooter} = data.conImpuesto ? pdfComprobanteFooterWithImpuestoFragment(total,transporte,5) :  pdfComprobanteFooterWithoutImpuestoFragment(total,transporte)
 	
 	return new Promise((res) => {
 		const doc: TDocumentDefinitions = {
@@ -334,7 +441,7 @@ export const genComprobante = (data: Pedido): Promise<any> => {
           margin: [0, 5, 0, 5],
 		  fontSize:8,
 		  lineHeight:1.25,
-          text: producto.link,
+          text: producto.nombre,
           link: producto.link,
         },
         {

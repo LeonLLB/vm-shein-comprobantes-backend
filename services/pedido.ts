@@ -27,6 +27,7 @@ class PedidoService{
             fecha: dto.fecha,
             horaMinutosEmision:dto.horaMinutosEmision,
             cliente: clienteRepository.create(dto.cliente),
+            conImpuesto: dto.conImpuesto,
             productos: dto.productos.map(producto=>{
                 return productoRepository.create(producto)
             })
@@ -64,6 +65,8 @@ class PedidoService{
 
         try {
             await queryRunner.manager.update(Cliente,{id:pedidoViejo.cliente.id},{...dto.cliente})
+
+            await queryRunner.manager.update(Pedido,{id:pedidoViejo.id},{conImpuesto:dto.conImpuesto})
         
             await queryRunner.manager.delete(Producto,{pedido: pedidoViejo.id})
         

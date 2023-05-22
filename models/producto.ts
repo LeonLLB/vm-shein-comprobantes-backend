@@ -22,6 +22,9 @@ export class Producto{
     @Column('float',{default:2})
     envioUnitario!:number
 
+    @Column('text',{default:''})
+    nombre!: string
+
     @ManyToOne(()=>Pedido,(pedido)=>pedido.productos,{onDelete:'CASCADE'})
     pedido!: Pedido
 }

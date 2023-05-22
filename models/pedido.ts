@@ -16,6 +16,9 @@ export class Pedido{
     @Column('varchar',{length:30,unique:true})
     cotizacion!: string
 
+    @Column('bool',{default:true})
+    conImpuesto!: boolean
+
     @ManyToOne(()=>Cliente,(cliente)=>cliente.pedidos,{cascade:true,onDelete:'CASCADE',eager:true})
     cliente!: Cliente
 
